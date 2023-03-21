@@ -1,41 +1,145 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 int extraMemoryAllocated;
 
-// implement merge sort
-// extraMemoryAllocated counts bytes of extra memory allocated
+
+void merge(int arr[], int l, int m, int r)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 =  r - m;
+
+    
+    int *L = (int*) malloc(n1*sizeof(int));
+    int *R = (int*) malloc(n2*sizeof(int));
+
+    
+    for (i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for (j = 0; j < n2; j++)
+        R[j] = arr[m + 1+ j];
+
+    
+    i = 0;
+    j = 0; 
+    k = l; 
+    while (i < n1 && j < n2)
+    {
+        if (L[i] <= R[j])
+        {
+            arr[k] = L[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+    free(L);
+    free(R);
+}
+
 void mergeSort(int pData[], int l, int r)
 {
-	
+	if(l<r){
+        int m = (l+r)/2;
+        mergeSort(pData, l, m);
+		mergeSort(pData, m+1, r);
+		merge(pData, l, m, r);
+    }
 }
 
-// implement insertion sort
-// extraMemoryAllocated counts bytes of memory allocated
 void insertionSort(int* pData, int n)
 {
-	
+	    int i, item, j;
+		extraMemoryAllocated=0;
+    for (i = 1; i < n; i++)
+    {
+         item = pData[i];
+
+        /* Move elements of arr[0..i-1], that are
+          greater than key, to one position ahead
+          of their current position */
+          for(j=i-1; j>=0; j--) //decrement because array is already sorted, and also inefficient
+          {
+              if(pData[j]>item) {
+                pData[j+1] = pData[j];
+				extraMemoryAllocated += sizeof(int);
+			  } else{
+                break;
+			  }
+
+          }
+          pData[j+1] = item;
+    }
 }
 
-// implement bubble sort
-// extraMemoryAllocated counts bytes of extra memory allocated
 void bubbleSort(int* pData, int n)
 {
-	
+	   int i, j,temp;
+	   extraMemoryAllocated=0;
+   for (i = 0; i < n-1; i++)
+   {
+        //printf("Iteration# %d\n",i+1);
+        for (j = 0; j < n-i-1; j++)
+        {
+
+           if (pData[j] > pData[j+1])
+           {//then swap
+             temp=pData[j];
+             pData[j]=pData[j+1];
+             pData[j+1]=temp;
+           }
+        }
+
+    }
 }
 
-// implement selection sort
-// extraMemoryAllocated counts bytes of extra memory allocated
 void selectionSort(int* pData, int n)
 {
-	
+		int i, j, min_idx, temp;
+		extraMemoryAllocated=0;
+
+	for (i = 0; i < n-1; i++)
+	{
+	    //printf("\nIteration# %d\n",i+1);
+		// Find the minimum element in unsorted array
+		min_idx = i;
+		for (j = i+1; j < n; j++)
+		if (pData[j] < pData[min_idx])
+			min_idx = j;
+		// Swap the found minimum element with the first element
+		temp = pData[i];
+		pData[i] = pData[min_idx];
+		pData[min_idx] = temp;
+
+		//printArray(arr, n);
+	}
 }
 
 // parses input file to an integer array
 int parseData(char *inputFileName, int **ppData)
 {
-	FILE* inFile = fopen(inputFileName,"r");
+	FILE* inFile = fopen("input1.txt","r");
 	int dataSz = 0;
 	*ppData = NULL;
 	
@@ -44,7 +148,10 @@ int parseData(char *inputFileName, int **ppData)
 		fscanf(inFile,"%d\n",&dataSz);
 		*ppData = (int *)malloc(sizeof(int) * dataSz);
 		// Implement parse data block
-	}
+		for(int i = 0; i < dataSz; i++) {
+        	fscanf(inFile, "%d", *ppData+i);
+		}
+	}	
 	
 	return dataSz;
 }
