@@ -15,7 +15,7 @@ void merge(int arr[], int l, int m, int r)
     
     int *L = (int*) malloc(n1*sizeof(int));
     int *R = (int*) malloc(n2*sizeof(int));
-
+    extraMemoryAllocated += sizeof(int);
     
     for (i = 0; i < n1; i++)
         L[i] = arr[l + i];
